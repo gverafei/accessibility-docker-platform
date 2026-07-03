@@ -1,18 +1,26 @@
 # Accessibility Docker Platform
 
-Infraestructura experimental contenerizada para la evaluación reproducible de accesibilidad web mediante Axe, Lighthouse y validación semántica opcional con GPT-5.
+Infraestructura experimental contenerizada para la evaluación revaluación automática y semántica de accesibilidad web utilizando Docker, Axe-Core, Lighthouse y GPT-5.
 
 ![Home](docs/images/arquitectura-docker.png)
 
-## 1. Descripción
+## 1. Descripción general
 
-Este proyecto permite ejecutar experimentos de evaluación de accesibilidad web desde una plataforma desarrollada en Flask. La infraestructura utiliza Docker Compose para ejecutar tres servicios:
-
-- `web`: aplicación Flask con interfaz web.
-- `evaluator`: servicio Node.js/Python con Axe, Lighthouse, Chromium y GPT-5.
-- `db`: base de datos MySQL 8.
+Accessibility Docker Platform es una plataforma experimental que permite a investigadores ejecutar evaluaciones reproducibles de accesibilidad web mediante una infraestructura completamente contenerizada.
 
 La plataforma permite registrar experimentos, evaluar una o varias URLs, generar reportes, visualizar gráficas y descargar evidencias en CSV y JSON.
+
+La plataforma integra las siguientes herramientas:
+
+- Axe-Core
+- Google Lighthouse
+- Chromium
+- GPT-5 (análisis semántico opcional)
+- MySQL
+- Flask
+- Docker Compose
+
+Todas las dependencias de software se encuentran incluidas dentro de imágenes Docker publicadas en Docker Hub. El equipo anfitrión únicamente requiere tener Docker instalado.
 
 ## 2. Requisitos
 
@@ -29,6 +37,12 @@ Opcionalmente, para usar la validación semántica:
 - API key de OpenAI
 
 ## 3. Estructura del proyecto
+
+La infraestructura utiliza Docker Compose para ejecutar tres servicios:
+
+- `web`: aplicación Flask con interfaz web.
+- `evaluator`: servicio Node.js/Python con Axe, Lighthouse, Chromium y GPT-5.
+- `db`: base de datos MySQL 8.
 
 ```text
 accessibility-docker-platform/
@@ -58,41 +72,63 @@ accessibility-docker-platform/
     ├── raw/
 ```
 
-## 4. Configuración
+## 4. Instalación
 
-Copiar el archivo de ejemplo:
+### Clonar el repositorio
+
+```bash
+git clone https://github.com/gverafei/accessibility-docker-platform.git
+
+cd accessibility-docker-platform
+```
+
+### Crear el archivo de configuración
 
 ```bash
 cp env.example .env
 ```
 
-Editar `.env` si se desea usar GPT-5:
+### Configurar GPT-5 (opcional)
+
+Si se desea realizar el análisis semántico mediante GPT, edite el archivo `.env` e incluya su llave de acceso o seleccione otro modelo de OPEN AI:
 
 ```env
 OPENAI_API_KEY=coloca_aqui_tu_api_key
 OPENAI_MODEL=gpt-5
-APP_TIMEZONE=America/Mexico_City
 ```
 
 Si no se configura la API key, la plataforma puede ejecutarse sin validación semántica.
 
 ## 5. Ejecución
 
-Construir y levantar los contenedores:
+Únicamente necesita iniciar la plataforma mediante:
 
 ```bash
-docker compose up --build
+docker compose up
 ```
 
-Abrir en el navegador:
+Durante la primera ejecución Docker descargará automáticamente las imágenes publicadas en Docker Hub.
+
+### Construcción desde el código fuente
+
+
+Si desea construir y levantar los contenedores desde el código fuente sin utilizar las imágenes de Docker Hub, utilice:
+
+```bash
+docker compose up -f docker-compose-dev.yml --build
+```
+
+### Abrir la plataforma
+
+Una vez finalizado el proceso, abra su navegador y acceda a:
 
 ```text
 http://localhost
 ```
 
-## 6. Reinicio limpio
+### Reinicio limpio
 
-Si se modifican tablas de MySQL o se requiere borrar todos los experimentos:
+Si se requiere borrar todos los experimentos realizados, ejecute:
 
 ```bash
 docker compose down -v --remove-orphans
@@ -101,9 +137,9 @@ docker compose up --build
 
 Este comando elimina los volúmenes, incluida la base de datos.
 
-# Uso de la plataforma
+## 6. Uso de la plataforma
 
-## Paso 1. Abrir la aplicación
+### Paso 1. Abrir la aplicación
 
 Abrir `http://localhost`.
 
@@ -113,7 +149,7 @@ Al iniciar la plataforma se mostrará la página principal.
 
 ---
 
-## Paso 2. Crear un nuevo experimento
+### Paso 2. Crear un nuevo experimento
 
 Introduzca una o varias URL (una por línea).
 
@@ -125,7 +161,7 @@ data/default_urls.txt
 
 ![Nuevo experimento](docs/images/new_experiment.png)
 
-## Paso 3. Habilitar el análisis semántico (opcional)
+### Paso 3. Habilitar el análisis semántico (opcional)
 
 Active la opción de análisis semántico mediante GPT-5.
 
@@ -133,7 +169,7 @@ Esta funcionalidad realiza una inspección adicional enfocada en aspectos semán
 
 ![Análisis semántico](docs/images/semantic_checkbox.png)
 
-## Paso 4. Generar el reporte
+### Paso 4. Generar el reporte
 
 Presione el botón:
 
@@ -143,7 +179,7 @@ Mientras se ejecuta el experimento se mostrará una barra de progreso indicando 
 
 ![Progreso](docs/images/progress.png)
 
-## Paso 5. Consultar los resultados
+### Paso 5. Consultar los resultados
 
 Al finalizar el experimento se mostrará un reporte interactivo con:
 
@@ -157,7 +193,7 @@ Al finalizar el experimento se mostrará un reporte interactivo con:
 
 ![Reporte](docs/images/report.png)
 
-## Paso 6. Descargar las evidencias
+### Paso 6. Descargar las evidencias
 
 La plataforma permite descargar:
 
@@ -170,9 +206,9 @@ Estos archivos permiten conservar las evidencias originales del experimento y fa
 
 ![Descargas](docs/images/downloads.png)
 
-## 8. Resultados generados
+##  7. Resultados generados
 
-Cada experimento almacena:
+Cada experimento registra automáticamente:
 
 - Versión de Python
 - Versión de Node.js
@@ -191,7 +227,11 @@ Cada experimento almacena:
 - Evidencias crudas en formato JSON.
 - Dataset consolidado en formato CSV.
 
-## 9. Evidencias descargables
+Esta información permite reproducir posteriormente el experimento bajo condiciones equivalentes.
+
+![Historial](docs/images/history.png)
+
+## 8. Evidencias descargables
 
 Desde el reporte del experimento se pueden descargar:
 
@@ -202,7 +242,13 @@ Desde el reporte del experimento se pueden descargar:
 
 Estos archivos permiten conservar las evidencias originales del experimento y facilitan su reproducción posterior.
 
-## 10. Servicios Docker
+Adicionalmente estos archivos se almacenan dentro del directorio:
+
+```text
+results/
+```
+
+## 9. Servicios Docker
 
 La infraestructura está compuesta por tres servicios:
 
@@ -218,7 +264,7 @@ El servicio `web` se publica en el puerto 80 del equipo anfitrión, por lo que l
 http://localhost
 ```
 
-## 11. Reproducibilidad
+## 10. Reproducibilidad
 
 La plataforma registra automáticamente el entorno experimental utilizado en cada ejecución:
 
@@ -232,27 +278,37 @@ La plataforma registra automáticamente el entorno experimental utilizado en cad
 
 Esto permite documentar las condiciones bajo las cuales se ejecutó cada experimento y facilita su reproducción por otros investigadores.
 
-## 12. Publicación de imágenes en Docker Hub
+## 11. Publicación de imágenes en Docker Hub
 
-Una vez validada la solución, las imágenes pueden construirse mediante:
+La plataforma se distribuye mediante dos imágenes Docker publicadas en Docker Hub:
+
+```text
+gverafei/accessibility-web
+
+gverafei/accessibility-evaluator
+```
+
+### Proceso de construcción
+
+A continuación se describe el proceso de construcción para construir las imágenes:
 
 ```bash
-docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-web ./web
-docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-evaluator ./evaluator
+docker build --platform linux/amd64,linux/arm64 -t gverafei/accessibility-web ./web
+docker build --platform linux/amd64,linux/arm64 -t gverafei/accessibility-evaluator ./evaluator
 ```
 
 Posteriormente podrán publicarse mediante:
 
 ```bash
-docker push tuusuario/accessibility-web
-docker push tuusuario/accessibility-evaluator
+docker push gverafei/accessibility-web
+docker push gverafei/accessibility-evaluator
 ```
 
 Para verificar que tienen soporte de multi-arquitectura:
 
 ```bash
-docker buildx imagetools inspect tuusuario/accessibility-web
-docker buildx imagetools inspect tuusuario/accessibility-evaluator
+docker buildx imagetools inspect gverafei/accessibility-web
+docker buildx imagetools inspect gverafei/accessibility-evaluator
 ```
 
 Debe aparecer dos campos Platform con linux/amd64 y linux/arm64
