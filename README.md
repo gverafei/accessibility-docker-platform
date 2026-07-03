@@ -174,8 +174,8 @@ Esto permite documentar las condiciones bajo las cuales se ejecutó cada experim
 Una vez validada la solución, las imágenes pueden construirse mediante:
 
 ```bash
-docker build -t tuusuario/accessibility-web:1.0 ./web
-docker build -t tuusuario/accessibility-evaluator:1.0 ./evaluator
+docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-web:1.0 ./web
+docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-evaluator:1.0 ./evaluator
 ```
 
 Posteriormente podrán publicarse mediante:
@@ -183,31 +183,6 @@ Posteriormente podrán publicarse mediante:
 ```bash
 docker push tuusuario/accessibility-web:1.0
 docker push tuusuario/accessibility-evaluator:1.0
-```
-
-Si se desea construir imágenes y publicarlas multi-arquitectura:
-
-```bash
-docker buildx create --use --name multiarch-builder
-docker buildx inspect --bootstrap
-```
-
-Luego se construye y publica:
-
-```bash
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -t gverafei/accessibility-web:1.0 \
-  --push \
-  ./web
-```
-
-```bash
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -t gverafei/accessibility-evaluator:1.0 \
-  --push \
-  ./evaluator
 ```
 
 Para verificar que tienen soporte de multi-arquitectura:
@@ -220,23 +195,3 @@ docker buildx imagetools inspect gverafei/accessibility-evaluator:1.0
 Debe aparecer dos campos Platform con linux/amd64 y linux/arm64
 
 De esta forma, se podrá ejecutar la plataforma descargando únicamente las imágenes desde Docker Hub, sin necesidad de reconstruir el proyecto.
-
-Para verificar cuál es el builder activo:
-
-```bash
-docker buildx ls
-```
-
-El activo tendrá un asterisco en el nombre.
-
-Para cambiar al builder por defecto:
-
-```bash
-docker buildx use default
-```
-
-Si se desea eliminar el builder creado anteriormente:
-
-```bash
-docker buildx rm multiarch-builder
-```

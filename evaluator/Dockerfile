@@ -1,32 +1,19 @@
-FROM node:20-alpine
+FROM node:20-bookworm
 
 WORKDIR /evaluator
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     python3 \
-    py3-pip \
-    py3-virtualenv \
+    python3-pip \
+    python3-venv \
     chromium \
-    nss \
-    freetype \
-    harfbuzz \
-    ca-certificates \
-    ttf-freefont
-
-ENV CHROME_PATH=/usr/bin/chromium-browser
-ENV CHROME_BIN=/usr/bin/chromium-browser
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+    && rm -rf /var/lib/apt/lists/*
 
 COPY package.json /evaluator/package.json
 COPY requirements.txt /evaluator/requirements.txt
 
 RUN npm install
-
-RUN python3 -m venv /opt/venv && \
-    /opt/venv/bin/pip install --upgrade pip && \
-    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
-
-ENV PATH="/opt/venv/bin:${PATH}"
+RUN pip3 install --break-system-packages --no-cache-dir -r requirements.txt
 
 COPY . /evaluator/
 
