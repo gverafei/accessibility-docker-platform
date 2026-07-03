@@ -174,22 +174,22 @@ Esto permite documentar las condiciones bajo las cuales se ejecutó cada experim
 Una vez validada la solución, las imágenes pueden construirse mediante:
 
 ```bash
-docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-web:1.0 ./web
-docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-evaluator:1.0 ./evaluator
+docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-web ./web
+docker build --platform linux/amd64,linux/arm64 -t tuusuario/accessibility-evaluator ./evaluator
 ```
 
 Posteriormente podrán publicarse mediante:
 
 ```bash
-docker push tuusuario/accessibility-web:1.0
-docker push tuusuario/accessibility-evaluator:1.0
+docker push tuusuario/accessibility-web
+docker push tuusuario/accessibility-evaluator
 ```
 
 Para verificar que tienen soporte de multi-arquitectura:
 
 ```bash
-docker buildx imagetools inspect gverafei/accessibility-web:1.0
-docker buildx imagetools inspect gverafei/accessibility-evaluator:1.0
+docker buildx imagetools inspect tuusuario/accessibility-web
+docker buildx imagetools inspect tuusuario/accessibility-evaluator
 ```
 
 Debe aparecer dos campos Platform con linux/amd64 y linux/arm64
