@@ -22,7 +22,7 @@ La plataforma integra las siguientes herramientas:
 
 Todas las dependencias de software se encuentran incluidas dentro de imágenes Docker publicadas en Docker Hub. El equipo anfitrión únicamente requiere tener Docker instalado.
 
-## 1.1 Repetibilidad y observables
+## 1.1 Proyecto final: Repetibilidad y observables
 
 **Usuario de GitHub:** `gverafei`
 
