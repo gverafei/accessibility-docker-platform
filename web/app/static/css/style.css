@@ -1,0 +1,25 @@
+body {
+    background-color: #f6f8fb;
+}
+
+.card {
+    border: 0;
+    border-radius: 1rem;
+}
+
+.metric-card {
+    min-height: 110px;
+}
+
+.navbar-brand {
+    letter-spacing: 0.3px;
+}
+
+pre {
+    white-space: pre-wrap;
+}
+
+.force-fluid {
+    width:95vw;
+    margin-left:calc(-47.5vw + 50%);
+}

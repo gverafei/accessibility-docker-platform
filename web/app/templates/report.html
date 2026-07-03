@@ -1,0 +1,704 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte del experimento{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="h3 mb-1">Reporte del experimento #{{ experiment.id }}</h1>
+        <p class="text-muted mb-0">{{ experiment.title }}</p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a 
+            href="{{ url_for('experiments.download_experiment_csv', experiment_id=experiment.id) }}" 
+            class="btn btn-outline-primary">
+            Descargar CSV
+        </a>
+
+        <a href="{{ url_for('experiments.experiments') }}" class="btn btn-outline-secondary">
+            Volver
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm metric-card">
+            <div class="card-body">
+                <div class="text-muted small">Estado</div>
+                <div class="h5 mb-0">{{ experiment.status }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm metric-card">
+            <div class="card-body">
+                <div class="text-muted small">Validación semántica</div>
+                <div class="h5 mb-0">
+                    {% if experiment.include_semantic %}
+                        GPT-5
+                    {% else %}
+                        No incluida
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm metric-card">
+            <div class="card-body">
+                <div class="text-muted small">Fecha de inicio</div>
+                <div class="h6 mb-0">{{ experiment.created_at }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm metric-card">
+            <div class="card-body">
+                <div class="text-muted small">URLs evaluadas</div>
+                <div class="h5 mb-0">{{ results|length }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if environment %}
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Entorno experimental</h2>
+
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <tbody>
+                    <tr>
+                        <th>Imagen web</th>
+                        <td>{{ environment.docker_web_image }}</td>
+                        <th>Imagen evaluator</th>
+                        <td>{{ environment.docker_evaluator_image }}</td>
+                    </tr>
+                    <tr>
+                        <th>Python</th>
+                        <td>{{ environment.python_version }}</td>
+                        <th>Node.js</th>
+                        <td>{{ environment.node_version }}</td>
+                    </tr>
+                    <tr>
+                        <th>Chromium</th>
+                        <td>{{ environment.chromium_version }}</td>
+                        <th>Axe Playwright</th>
+                        <td>{{ environment.axe_version }}</td>
+                    </tr>
+                    <tr>
+                        <th>Lighthouse</th>
+                        <td>{{ environment.lighthouse_version }}</td>
+                        <th>Modelo LLM</th>
+                        <td>{{ environment.openai_model }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tiempo total de ejecución</th>
+                        <td colspan="3">{{ "%.2f"|format(environment.execution_seconds or 0) }} segundos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Análisis automático del experimento</h2>
+
+        <p class="mb-4">
+            {{ analysis.summary }}
+        </p>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="border rounded p-3 bg-light h-100">
+                    <div class="text-muted small">URLs evaluadas</div>
+                    <div class="h4 mb-0">{{ analysis.general.total_urls }}</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="border rounded p-3 bg-light h-100">
+                    <div class="text-muted small">Violaciones Axe</div>
+                    <div class="h4 mb-0">{{ analysis.general.total_axe }}</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="border rounded p-3 bg-light h-100">
+                    <div class="text-muted small">Promedio Lighthouse</div>
+                    <div class="h4 mb-0">{{ analysis.general.lighthouse_mean }}/100</div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="border rounded p-3 bg-light h-100">
+                    <div class="text-muted small">Tiempo promedio</div>
+                    <div class="h4 mb-0">{{ analysis.general.execution_mean }} s</div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="h6">Correlaciones principales</h3>
+
+        <div class="table-responsive mb-4">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>Relación analizada</th>
+                        <th>Pearson</th>
+                        <th>Spearman (no normalidad)</th>
+                        <th>Interpretación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Axe vs Lighthouse</td>
+                        <td>{{ analysis.correlations.axe_lighthouse.pearson }}</td>
+                        <td>{{ analysis.correlations.axe_lighthouse.spearman }}</td>
+                        <td>
+                            {% if analysis.correlations.axe_lighthouse.pearson is not none %}
+                                {% set value = analysis.correlations.axe_lighthouse.pearson %}
+                                {% if value < 0 %}
+                                    Relación inversa: más violaciones tienden a asociarse con menor puntaje.
+                                {% else %}
+                                    Relación directa o no esperada entre ambas métricas.
+                                {% endif %}
+                            {% else %}
+                                No calculable.
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Complejidad DOM vs Axe</td>
+                        <td>{{ analysis.correlations.dom_axe.pearson }}</td>
+                        <td>{{ analysis.correlations.dom_axe.spearman }}</td>
+                        <td>Relación entre tamaño estructural de la página y número de violaciones.</td>
+                    </tr>
+
+                    <tr>
+                        <td>Imágenes vs Axe</td>
+                        <td>{{ analysis.correlations.images_axe.pearson }}</td>
+                        <td>{{ analysis.correlations.images_axe.spearman }}</td>
+                        <td>Relación entre cantidad de imágenes y violaciones detectadas.</td>
+                    </tr>
+
+                    {% if experiment.include_semantic %}
+                    <tr>
+                        <td>Hallazgos GPT-5 vs Axe</td>
+                        <td>{{ analysis.correlations.gpt_axe.pearson }}</td>
+                        <td>{{ analysis.correlations.gpt_axe.spearman }}</td>
+                        <td>Relación entre hallazgos semánticos y violaciones automáticas.</td>
+                    </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td>Tiempo de ejecución vs DOM</td>
+                        <td>{{ analysis.correlations.time_dom.pearson }}</td>
+                        <td>{{ analysis.correlations.time_dom.spearman }}</td>
+                        <td>Relación entre complejidad estructural y tiempo de procesamiento.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {% if experiment.include_semantic and analysis.top_semantic_categories %}
+            <h3 class="h6">Categorías semánticas más frecuentes</h3>
+
+            <ul class="mb-0">
+                {% for category, count in analysis.top_semantic_categories %}
+                    <li>
+                        <code>{{ category }}</code>: {{ count }} hallazgo(s)
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Relación entre Axe y Lighthouse</h2>
+                <p class="text-muted small">
+                    Cada punto representa una URL. Se espera que un mayor número de violaciones Axe
+                    se relacione con un menor puntaje Lighthouse.
+                </p>
+                <canvas id="axeLighthouseScatter" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Severidad de violaciones Axe</h2>
+                <p class="text-muted small">
+                    Distribución global de violaciones por nivel de impacto.
+                </p>
+                <canvas id="severityChart" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {% if experiment.include_semantic %}
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Hallazgos semánticos por categoría</h2>
+                <p class="text-muted small">
+                    Categorías reportadas por el módulo GPT-5.
+                </p>
+                <canvas id="semanticCategoryChart" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Complejidad DOM vs violaciones Axe</h2>
+                <p class="text-muted small">
+                    Relación entre tamaño estructural del documento y violaciones detectadas.
+                </p>
+                <canvas id="domAxeScatter" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Imágenes vs violaciones Axe</h2>
+                <p class="text-muted small">
+                    Relación entre cantidad de imágenes y violaciones detectadas.
+                </p>
+                <canvas id="imagesAxeScatter" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Tiempo de ejecución por URL</h2>
+                <p class="text-muted small">
+                    Tiempo requerido para procesar cada página evaluada.
+                </p>
+                <canvas id="executionTimeChart" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="force-fluid">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="h5 mb-3">Resultados por URL</h2>
+
+            {% if results %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr class="small">
+                                <th>URL</th>
+                                <th>Estado</th>
+                                <th>Axe total</th>
+                                <th>Axe Critical</th>
+                                <th>Axe Serious</th>
+                                <th>Axe Moderate</th>
+                                <th>Axe Minor</th>
+                                <th>Lighthouse</th>
+                                <th>DOM</th>
+                                <th>Imágenes</th>
+                                <th>Enlaces</th>
+                                <th>Encabezados</th>
+                                <th>Landmarks</th>
+                                <th>Tiempo</th>
+                                <th>Evidencias</th>
+                                {% if experiment.include_semantic %}
+                                    <th>Riesgo semántico</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in results %}
+                                <tr class="small">
+                                    <td class="small">
+                                        <a href="{{ item.url }}" target="_blank" rel="noopener">
+                                            {{ item.url }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if item.status == "completed" %}
+                                            <span class="badge bg-success">completed</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">failed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.axe_violations }}</td>
+                                    <td>{{ item.axe_critical }}</td>
+                                    <td>{{ item.axe_serious }}</td>
+                                    <td>{{ item.axe_moderate }}</td>
+                                    <td>{{ item.axe_minor }}</td>
+                                    <td>
+                                        {% if item.lighthouse_score is not none %}
+                                            {{ item.lighthouse_score }}/100
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.dom_nodes }}</td>
+                                    <td>{{ item.images }}</td>
+                                    <td>{{ item.links }}</td>
+                                    <td>{{ item.headings }}</td>
+                                    <td class="small">
+                                        main: {{ "sí" if item.has_main_landmark else "no" }}<br>
+                                        nav: {{ "sí" if item.has_nav_landmark else "no" }}<br>
+                                        footer: {{ "sí" if item.has_footer_landmark else "no" }}
+                                    </td>
+                                    <td>{{ "%.2f"|format(item.execution_seconds or 0) }} s</td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <a 
+                                                href="{{ url_for('experiments.download_raw_result', experiment_id=experiment.id, result_id=item.id, tool='axe') }}" 
+                                                class="btn btn-sm btn-outline-secondary">
+                                                Axe JSON
+                                            </a>
+
+                                            <a 
+                                                href="{{ url_for('experiments.download_raw_result', experiment_id=experiment.id, result_id=item.id, tool='lighthouse') }}" 
+                                                class="btn btn-sm btn-outline-secondary">
+                                                Lighthouse JSON
+                                            </a>
+
+                                            {% if experiment.include_semantic and item.semantic_raw_path %}
+                                                <a 
+                                                    href="{{ url_for('experiments.download_raw_result', experiment_id=experiment.id, result_id=item.id, tool='semantic') }}" 
+                                                    class="btn btn-sm btn-outline-secondary">
+                                                    GPT-5 JSON
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+
+                                    {% if experiment.include_semantic %}
+                                        <td>
+                                            {% if item.semantic_risk_level == "high" %}
+                                                <span class="badge bg-danger">high</span>
+                                            {% elif item.semantic_risk_level == "medium" %}
+                                                <span class="badge bg-warning text-dark">medium</span>
+                                            {% elif item.semantic_risk_level == "low" %}
+                                                <span class="badge bg-success">low</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">unknown</span>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+                                </tr>
+
+                                {% if experiment.include_semantic and item.semantic_summary %}
+                                    <tr>
+                                        <td colspan="16">
+                                            <div class="alert alert-light border small mb-2">
+                                                <strong>Resumen GPT-5:</strong> {{ item.semantic_summary }}
+                                            </div>
+
+                                            {% if item.semantic_findings %}
+                                                <div class="accordion accordion-flush small" id="semanticAccordion{{ item.id }}">
+                                                    {% for finding in item.semantic_findings %}
+                                                        <div class="accordion-item">
+                                                            <h2 class="accordion-header" id="heading{{ item.id }}{{ loop.index }}">
+                                                                <button 
+                                                                    class="accordion-button collapsed" 
+                                                                    type="button" 
+                                                                    data-bs-toggle="collapse" 
+                                                                    data-bs-target="#collapse{{ item.id }}{{ loop.index }}">
+                                                                    <strong>[{{ finding.category }}]</strong>
+                                                                    ({{ finding.severity }}) —
+                                                                    {{ finding.description }}
+                                                                </button>
+                                                            </h2>
+
+                                                            <div 
+                                                                id="collapse{{ item.id }}{{ loop.index }}" 
+                                                                class="accordion-collapse collapse" 
+                                                                data-bs-parent="#semanticAccordion{{ item.id }}">
+                                                                <div class="accordion-body">
+                                                                    <p class="mb-2">
+                                                                        <strong>Elemento o selector:</strong><br>
+                                                                        <code>{{ finding.selector }}</code>
+                                                                    </p>
+
+                                                                    <p class="mb-2">
+                                                                        <strong>Evidencia HTML:</strong>
+                                                                    </p>
+
+                                                                    <pre class="bg-light border rounded p-2 small">{{ finding.html_evidence }}</pre>
+
+                                                                    <p class="mb-2">
+                                                                        <strong>Relevancia:</strong><br>
+                                                                        {{ finding.why_it_matters }}
+                                                                    </p>
+
+                                                                    <p class="mb-0">
+                                                                        <strong>Recomendación:</strong><br>
+                                                                        {{ finding.recommendation }}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+
+                                {% if item.error_message %}
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="alert alert-danger mb-0 small">
+                                                {{ item.error_message }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">Este experimento aún no tiene resultados registrados.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const labels = {{ chart_labels | tojson }};
+const axeValues = {{ axe_values | tojson }};
+const lighthouseValues = {{ lighthouse_values | tojson }};
+const severityTotals = {{ severity_totals | tojson }};
+const domValues = {{ dom_values | tojson }};
+const imageValues = {{ image_values | tojson }};
+const executionValues = {{ execution_values | tojson }};
+const semanticCategoryLabels = {{ semantic_category_labels | tojson }};
+const semanticCategoryValues = {{ semantic_category_values | tojson }};
+
+const axeLighthouseData = labels.map((label, index) => ({
+    x: axeValues[index],
+    y: lighthouseValues[index],
+    url: label
+}));
+
+new Chart(document.getElementById("axeLighthouseScatter"), {
+    type: "scatter",
+    data: {
+        datasets: [{
+            label: "URL evaluada",
+            data: axeLighthouseData
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const item = context.raw;
+                        return `${item.url}: Axe=${item.x}, Lighthouse=${item.y}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Violaciones Axe"
+                },
+                beginAtZero: true
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Lighthouse accessibility score"
+                },
+                min: 0,
+                max: 100
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById("severityChart"), {
+    type: "doughnut",
+    data: {
+        labels: ["Critical", "Serious", "Moderate", "Minor"],
+        datasets: [{
+            data: [
+                severityTotals.critical,
+                severityTotals.serious,
+                severityTotals.moderate,
+                severityTotals.minor
+            ]
+        }]
+    },
+    options: {
+        responsive: true
+    }
+});
+
+const semanticCanvas = document.getElementById("semanticCategoryChart");
+if (semanticCanvas) {
+    new Chart(semanticCanvas, {
+        type: "bar",
+        data: {
+            labels: semanticCategoryLabels,
+            datasets: [{
+                label: "Hallazgos GPT-5",
+                data: semanticCategoryValues
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+const domAxeData = labels.map((label, index) => ({
+    x: domValues[index],
+    y: axeValues[index],
+    url: label
+}));
+
+new Chart(document.getElementById("domAxeScatter"), {
+    type: "scatter",
+    data: {
+        datasets: [{
+            label: "URL evaluada",
+            data: domAxeData
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const item = context.raw;
+                        return `${item.url}: DOM=${item.x}, Axe=${item.y}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Nodos DOM"
+                },
+                beginAtZero: true
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Violaciones Axe"
+                },
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+const imagesAxeData = labels.map((label, index) => ({
+    x: imageValues[index],
+    y: axeValues[index],
+    url: label
+}));
+
+new Chart(document.getElementById("imagesAxeScatter"), {
+    type: "scatter",
+    data: {
+        datasets: [{
+            label: "URL evaluada",
+            data: imagesAxeData
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const item = context.raw;
+                        return `${item.url}: imágenes=${item.x}, Axe=${item.y}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Número de imágenes"
+                },
+                beginAtZero: true
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Violaciones Axe"
+                },
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById("executionTimeChart"), {
+    type: "bar",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Segundos",
+            data: executionValues
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: "Segundos"
+                },
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Experimentos{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Experimentos registrados</h1>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if experiments %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Experimento</th>
+                            <th>URLs</th>
+                            <th>LLM</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Reporte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for experiment in experiments %}
+                            <tr>
+                                <td>{{ experiment.id }}</td>
+                                <td>{{ experiment.title }}</td>
+                                <td>
+                                    <pre class="small mb-0">{{ experiment.urls }}</pre>
+                                </td>
+                                <td>
+                                    {% if experiment.include_semantic %}
+                                        <span class="badge bg-info text-dark">GPT-5</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if experiment.status == "completed" %}
+                                        <span class="badge bg-success">completed</span>
+                                    {% elif experiment.status == "failed" %}
+                                        <span class="badge bg-danger">failed</span>
+                                    {% elif experiment.status == "running" %}
+                                        <span class="badge bg-warning text-dark">running</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ experiment.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ experiment.created_at }}</td>
+                                <td>
+                                    <a 
+                                        href="{{ url_for('experiments.experiment_report', experiment_id=experiment.id) }}" 
+                                        class="btn btn-sm btn-outline-primary">
+                                        Ver reporte
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">
+                Aún no hay experimentos registrados.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

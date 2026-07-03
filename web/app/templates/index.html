@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo experimento{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-3">Nuevo experimento de accesibilidad web</h1>
+
+                <p class="text-muted">
+                    Esta plataforma ejecutará un experimento reproducible para evaluar accesibilidad web
+                    mediante herramientas automáticas y validación semántica asistida por LLM.
+                </p>
+
+                <form method="post" action="{{ url_for('experiments.run_experiment') }}" id="experimentForm">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Nombre del experimento</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="title" 
+                            name="title" 
+                            placeholder="Ejemplo: Evaluación de sitios institucionales UV. Si lo dejas vacío, se usará la fecha y hora actual.">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="urls" class="form-label">URLs a evaluar</label>
+                        <textarea 
+                            class="form-control" 
+                            id="urls" 
+                            name="urls" 
+                            rows="7"
+                            placeholder="Escribe una URL por línea. Si lo dejas vacío, se usará el dataset interno."></textarea>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            role="switch" 
+                            id="include_semantic" 
+                            name="include_semantic">
+                        <label class="form-check-label" for="include_semantic">
+                            Incluir validación semántica con GPT-5
+                        </label>
+                        <div class="form-text">
+                            Esta opción puede incrementar el tiempo de ejecución y consumir tokens de la API.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitButton">
+                        Generar reporte
+                    </button>
+
+                    <div class="mt-4 d-none" id="processingBox">
+                        <div class="alert alert-info mb-3">
+                            El experimento se está ejecutando. Este proceso puede tardar varios segundos por cada URL evaluada.
+                        </div>
+
+                        <div class="progress" role="progressbar" aria-label="Procesando experimento">
+                            <div 
+                                class="progress-bar progress-bar-striped progress-bar-animated" 
+                                style="width: 100%">
+                                Procesando...
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const form = document.getElementById("experimentForm");
+const submitButton = document.getElementById("submitButton");
+const processingBox = document.getElementById("processingBox");
+
+form.addEventListener("submit", function () {
+    submitButton.disabled = true;
+    submitButton.innerText = "Procesando...";
+    processingBox.classList.remove("d-none");
+});
+</script>
+{% endblock %}
