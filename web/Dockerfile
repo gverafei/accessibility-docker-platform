@@ -4,9 +4,6 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     default-mysql-client \
-    gcc \
-    pkg-config \
-    default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /tmp/requirements.txt
