@@ -1,0 +1,52 @@
+services:
+  web:
+    build:
+      context: ./web
+    container_name: accessibility_web
+    ports:
+      - "80:5000"
+    env_file:
+      - .env
+    volumes:
+      - ./web/app:/app
+      - ./results:/results
+      - ./data:/data
+    depends_on:
+      - db
+      - evaluator
+    networks:
+      - accessibility_net
+
+  evaluator:
+    build:
+      context: ./evaluator
+    container_name: accessibility_evaluator
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./results:/results
+      - ./data:/data
+    networks:
+      - accessibility_net
+
+  db:
+    image: mysql:8.0
+    container_name: accessibility_db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - accessibility_net
+
+volumes:
+  mysql_data:
+
+networks:
+  accessibility_net:
+    driver: bridge
