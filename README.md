@@ -22,6 +22,8 @@ Antes de ejecutar el proyecto se requiere tener instalado:
 - Docker Compose
 - Conexión a Internet
 
+> Docker Compose ya se encuentra incluido en Docker Desktop.
+
 Opcionalmente, para usar la validación semántica:
 
 - API key de OpenAI
@@ -54,8 +56,6 @@ accessibility-docker-platform/
 │
 └── results/
     ├── raw/
-    ├── reports/
-    └── charts/
 ```
 
 ## 4. Configuración
@@ -101,25 +101,86 @@ docker compose up --build
 
 Este comando elimina los volúmenes, incluida la base de datos.
 
-## 7. Uso de la plataforma
+# Uso de la plataforma
 
-1. Abrir `http://localhost`.
-2. Capturar un nombre para el experimento.
-3. Escribir una o varias URLs, una por línea.
-4. Activar opcionalmente la validación semántica con GPT-5.
-5. Presionar **Generar reporte**.
-6. Consultar el reporte generado.
+## Paso 1. Abrir la aplicación
 
-Si no se escriben URLs, se utilizará el archivo:
+Abrir `http://localhost`.
+
+Al iniciar la plataforma se mostrará la página principal.
+
+![Inicio](docs/images/home.png)
+
+---
+
+## Paso 2. Crear un nuevo experimento
+
+Introduzca una o varias URL (una por línea).
+
+Si el cuadro de texto se deja vacío, la plataforma utilizará automáticamente el conjunto de sitios de prueba incluido en el proyecto en el archivo:
 
 ```text
 data/default_urls.txt
 ```
 
+![Nuevo experimento](docs/images/new_experiment.png)
+
+## Paso 3. Habilitar el análisis semántico (opcional)
+
+Active la opción de análisis semántico mediante GPT-5.
+
+Esta funcionalidad realiza una inspección adicional enfocada en aspectos semánticos de accesibilidad que normalmente no son detectados por herramientas automáticas tradicionales.
+
+![Análisis semántico](docs/images/semantic_checkbox.png)
+
+## Paso 4. Generar el reporte
+
+Presione el botón:
+
+> **Generar reporte**
+
+Mientras se ejecuta el experimento se mostrará una barra de progreso indicando el estado de procesamiento.
+
+![Progreso](docs/images/progress.png)
+
+## Paso 5. Consultar los resultados
+
+Al finalizar el experimento se mostrará un reporte interactivo con:
+
+- Violaciones detectadas por Axe-Core.
+- Puntaje de accesibilidad obtenido por Lighthouse.
+- Hallazgos del análisis semántico mediante GPT-5.
+- Métricas estructurales del documento HTML.
+- Información del entorno experimental.
+- Estadísticas descriptivas.
+- Gráficas interactivas.
+
+![Reporte](docs/images/report.png)
+
+## Paso 6. Descargar las evidencias
+
+La plataforma permite descargar:
+
+- Dataset consolidado (CSV)
+- Resultados de Axe-Core (JSON)
+- Resultados de Lighthouse (JSON)
+- Resultados del análisis semántico (JSON)
+
+Estos archivos permiten conservar las evidencias originales del experimento y facilitan su reproducción posterior.
+
+![Descargas](docs/images/downloads.png)
+
 ## 8. Resultados generados
 
 Cada experimento almacena:
 
+- Versión de Python
+- Versión de Node.js
+- Versión de Chromium
+- Versión de Axe-Core
+- Versión de Lighthouse
+- Modelo GPT utilizado
+- Versión de las imágenes Docker
 - URLs evaluadas.
 - Resultados de Axe.
 - Resultados de Lighthouse.
@@ -138,6 +199,8 @@ Desde el reporte del experimento se pueden descargar:
 - JSON crudo de Axe.
 - JSON crudo de Lighthouse.
 - JSON crudo de GPT-5 (cuando aplique).
+
+Estos archivos permiten conservar las evidencias originales del experimento y facilitan su reproducción posterior.
 
 ## 10. Servicios Docker
 
@@ -169,7 +232,7 @@ La plataforma registra automáticamente el entorno experimental utilizado en cad
 
 Esto permite documentar las condiciones bajo las cuales se ejecutó cada experimento y facilita su reproducción por otros investigadores.
 
-## 12. Publicación futura en Docker Hub
+## 12. Publicación de imágenes en Docker Hub
 
 Una vez validada la solución, las imágenes pueden construirse mediante:
 
@@ -195,3 +258,7 @@ docker buildx imagetools inspect tuusuario/accessibility-evaluator
 Debe aparecer dos campos Platform con linux/amd64 y linux/arm64
 
 De esta forma, se podrá ejecutar la plataforma descargando únicamente las imágenes desde Docker Hub, sin necesidad de reconstruir el proyecto.
+
+# Licencia
+
+MIT License
