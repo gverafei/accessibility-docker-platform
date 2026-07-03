@@ -72,6 +72,14 @@ accessibility-docker-platform/
     ├── raw/
 ```
 
+La plataforma se distribuye mediante dos imágenes Docker publicadas en Docker Hub:
+
+```text
+gverafei/accessibility-web
+
+gverafei/accessibility-evaluator
+```
+
 ## 4. Instalación
 
 ### Clonar el repositorio
@@ -290,7 +298,7 @@ gverafei/accessibility-evaluator
 
 ### Proceso de construcción
 
-A continuación se describe el proceso de construcción para construir las imágenes:
+A continuación se describe el proceso de construcción de las imágenes:
 
 ```bash
 docker build --platform linux/amd64,linux/arm64 -t gverafei/accessibility-web ./web
