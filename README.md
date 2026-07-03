@@ -22,6 +22,57 @@ La plataforma integra las siguientes herramientas:
 
 Todas las dependencias de software se encuentran incluidas dentro de imágenes Docker publicadas en Docker Hub. El equipo anfitrión únicamente requiere tener Docker instalado.
 
+## 1.1 Repetibilidad y observables
+
+**Usuario de GitHub:** `gverafei`
+
+**Usuario de Docker Hub:** `gverafei`
+
+### Hipótesis
+
+**H1.** Una infraestructura contenerizada permite realizar evaluaciones automáticas de accesibilidad web de forma repetible, produciendo métricas consistentes de accesibilidad (Axe-Core y Lighthouse) y tiempos de ejecución con baja variabilidad cuando el mismo conjunto de sitios web se analiza bajo las mismas condiciones, facilitando la realización de estudios experimentales en este dominio.
+
+### Protocolo experimental
+
+Se ejecutará **30 veces** el mismo experimento utilizando la infraestructura Docker sin modificar la configuración del sistema.
+
+**URLs evaluadas:**
+
+* [https://www.uv.mx/fei/](https://www.uv.mx/fei/)
+* [https://www.w3.org/WAI/](https://www.w3.org/WAI/)
+* [https://eminus.uv.mx/eminus4/](https://eminus.uv.mx/eminus4/)
+
+**Variables analizadas:**
+
+1. Tiempo total de ejecución.
+2. Número total de violaciones detectadas por Axe-Core.
+3. Puntaje promedio de accesibilidad obtenido mediante Lighthouse.
+
+Para cada variable se calcularán:
+
+* Media.
+* Desviación estándar.
+* Coeficiente de variación (CV).
+
+Además, se observarán las correlaciones generadas automáticamente por la plataforma entre las principales métricas del experimento.
+
+### Instrucciones para los demás evaluadores
+
+Repitan el experimento **30 veces** utilizando las mismas tres URL y la misma configuración de la plataforma. Calculen las tres métricas anteriores (media, desviación estándar y CV) y publiquen sus resultados en este mismo hilo, indicando también las correlaciones obtenidas y cualquier diferencia observada respecto a mis resultados.
+
+### Criterio de evaluación
+
+Se considerará que el experimento presenta una alta repetibilidad si las métricas obtenidas muestran un **coeficiente de variación bajo**, indicando una variabilidad mínima entre ejecuciones bajo las mismas condiciones experimentales.
+
+### Resultados
+
+
+
+### Conclusiones
+
+Si la hipótesis se cumple, los resultados mostrarán que la contenerización proporciona un entorno de ejecución estable y consistente, favoreciendo la repetibilidad de los experimentos. En caso de observar diferencias entre equipos, estas podrán atribuirse a factores como el hardware, la carga del sistema o las condiciones de red, los cuales serán discutidos durante la comparación de resultados entre participantes.
+
+
 ## 2. Requisitos
 
 Antes de ejecutar el proyecto se requiere tener instalado:
