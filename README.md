@@ -94,7 +94,7 @@ Se considerará que el experimento presenta una alta repetibilidad si las métri
 
 </small>
 
-### Resultados
+### Resultados obtenidos por el autor
 
 <small>
 
@@ -203,7 +203,7 @@ Repitan el experimento utilizando las mismas tres URL y activando la opción **"
 
 Se esperaría que las categorías principales reportadas por GPT-5 se mantengan relativamente estables entre ejecuciones, aunque podrían presentarse variaciones en el número de hallazgos o en la clasificación de algunos problemas debido al carácter probabilístico del modelo de lenguaje.
 
-### Resultados
+### Resultados obtenidos por el autor
 
 <small>
 
