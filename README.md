@@ -151,6 +151,104 @@ Durante las treinta ejecuciones no se presentaron fallos de conectividad, bloque
 
 Sin embargo, este comportamiento podría ser diferente al incorporar un modelo de lenguaje como GPT-5 para realizar el análisis semántico. A diferencia de Axe-Core y Lighthouse, los modelos de lenguaje están basados en aprendizaje automático y procesos probabilísticos, por lo que sus respuestas pueden presentar cierta variabilidad entre ejecuciones, incluso cuando la entrada permanece sin cambios. En consecuencia, en la siguiente observación de replicabilidad, se debería analizar la estabilidad de los hallazgos generados por el LLM, permitiendo comparar el comportamiento de herramientas determinísticas frente a sistemas basados en inteligencia artificial generativa. De esta manera, sería posible caracterizar con mayor precisión el grado de repetibilidad alcanzable por cada tipo de tecnología dentro de una infraestructura experimental para la evaluación de accesibilidad web.
 
+## 1.2 Proyecto final: Replicabilidad
+
+### Hipótesis
+
+**H2.** Al incorporar un modelo de lenguaje de gran escala (LLM) al proceso de evaluación automática de accesibilidad web, los hallazgos semánticos conservarán una tendencia similar entre ejecuciones, aunque podrán presentar una variabilidad mayor que las herramientas determinísticas debido a la naturaleza probabilística del modelo.
+
+### Modificación al experimento
+
+Con respecto al experimento de repetibilidad, únicamente se modifica la siguiente condición:
+
+* **Activar la opción "Validar con GPT-5".**
+
+![Análisis semántico](docs/images/semantic_checkbox.png)
+
+Todas las demás condiciones experimentales permanecen sin cambios.
+
+### Protocolo experimental
+
+Ejecutar la plataforma solo de **5 a 10 veces** (debido a costos de API) utilizando las siguientes URL:
+
+* [https://www.w3.org/WAI/](https://www.w3.org/WAI/)
+* [https://www.uv.mx/](https://www.uv.mx/)
+* [https://www.un.org/](https://www.un.org/)
+
+En cada ejecución registrar los datos de la gráfica **"Hallazgos semánticos por categoría"** generada por GPT-5.
+
+![alt text](docs/images/cat_semanticas.png)
+
+Las categorías evaluadas son:
+
+* button_label
+* semantic_structure
+* link_text
+* landmark
+* alt_text
+
+### Análisis
+
+Para cada categoría calcular:
+
+* Media.
+* Desviación estándar.
+* Coeficiente de variación (CV).
+
+### Instrucciones para los demás evaluadores
+
+Repitan el experimento utilizando las mismas tres URL y activando la opción **"Validar con GPT-5"**. Registren los hallazgos semánticos por categoría durante diez ejecuciones consecutivas y calculen la media, la desviación estándar y el coeficiente de variación para cada categoría. Finalmente, comparen sus resultados con los obtenidos en este hilo e indiquen si observaron categorías nuevas, diferencias en la frecuencia de los hallazgos o cambios relevantes en el comportamiento del modelo.
+
+### Criterio de evaluación
+
+Se esperaría que las categorías principales reportadas por GPT-5 se mantengan relativamente estables entre ejecuciones, aunque podrían presentarse variaciones en el número de hallazgos o en la clasificación de algunos problemas debido al carácter probabilístico del modelo de lenguaje.
+
+### Resultados
+
+<small>
+
+| Iteración | Total GPT | button_label | semantic_structure | link_text | landmark | alt_text |
+| --------: | --------: | -----------: | -----------------: | --------: | -------: | -------: |
+| 1 | 10 | 4 | 2 | 3 | 1 | 0 |
+| 2 | 7  | 0 | 3 | 3 | 1 | 0 |
+| 3 | 8  | 3 | 2 | 2 | 1 | 0 |
+| 4 | 9  | 3 | 1 | 2 | 3 | 0 |
+| 5 | 10 | 3 | 0 | 5 | 1 | 1 |
+| 6 | 7  | 2 | 4 | 1 | 0 | 0 |
+| 7 | 7  | 3 | 1 | 3 | 0 | 0 |
+| 8 | 8  | 3 | 2 | 2 | 1 | 0 |
+| 9 | 10 | 3 | 2 | 4 | 1 | 0 |
+| 10 | 7 | 2 | 3 | 1 | 1 | 0 |
+
+</small>
+
+<small>
+
+| Métrica                  |    Media | Desviación estándar | Coeficiente de variación (CV) |
+| ------------------------ | -------: | ------------------: | ----------------------------: |
+| Total de hallazgos GPT-5 | **8.30** |            **1.34** |                   **16.11 %** |
+| button_label             | **2.60** |            **1.07** |                   **41.34 %** |
+| semantic_structure       | **2.00** |            **1.15** |                   **57.74 %** |
+| link_text                | **2.60** |            **1.26** |                   **48.65 %** |
+| landmark                 | **1.00** |            **0.82** |                   **81.65 %** |
+| alt_text                 | **0.10** |            **0.32** |                   **-**       |
+
+</small>
+
+> **Nota:** El coeficiente de variación de `alt_text` pierde capacidad interpretativa porque la media es cercana a cero (solo apareció una vez en las diez ejecuciones).
+
+### Conclusiones
+
+La hipótesis **H2** fue **aceptada**.
+
+Los resultados obtenidos reflejan una diferencia fundamental entre las herramientas determinísticas y los modelos de lenguaje. Axe-Core y Lighthouse implementan algoritmos basados en reglas definidas por los estándares WCAG; por ello, cuando se ejecutan sobre el mismo contenido y bajo las mismas condiciones, producen resultados idénticos entre ejecuciones.
+
+En contraste, GPT-5 genera sus respuestas mediante un modelo de aprendizaje automático basado en inferencia probabilística. Aunque la entrada permanezca sin cambios, pequeñas variaciones en el proceso de generación pueden modificar el número de hallazgos asignados a cada categoría o incluso hacer aparecer categorías poco frecuentes, como ocurrió con `alt_text`. No obstante, las categorías predominantes permanecieron estables durante las diez ejecuciones, lo que indica que el modelo conserva una interpretación consistente de los principales problemas de accesibilidad del sitio evaluado.
+
+En consecuencia, la evaluación de la **replicabilidad** de modelos de lenguaje no debe centrarse en obtener exactamente la misma salida en cada ejecución, sino en verificar que las tendencias generales y las categorías relevantes de problemas permanezcan consistentes. Este comportamiento coincide con la naturaleza de los sistemas basados en inteligencia artificial generativa y sugiere que herramientas como GPT-5 pueden complementar a los evaluadores automáticos tradicionales, aportando análisis semánticos que, aunque presentan una variabilidad moderada, conservan patrones de identificación relativamente estables.
+
+> **Reflexión clave:** Mientras que las herramientas basadas en reglas pueden juzgarse por la estabilidad exacta de sus resultados, los modelos de lenguaje conviene evaluarlos por la estabilidad de los patrones que identifican y de las conclusiones que producen. Esa distinción fortalece mucho las discusiones de los experimentos y está alineada con la naturaleza de cada tecnología.
+
 ## 2. Requisitos
 
 Antes de ejecutar el proyecto se requiere tener instalado:
