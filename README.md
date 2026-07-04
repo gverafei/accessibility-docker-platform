@@ -38,15 +38,27 @@ Se ejecutará **30 veces** el mismo experimento utilizando la infraestructura Do
 
 **URLs evaluadas:**
 
+Coloque en el cuadro de texto las siguientes URLs como lo muestra la Figura.
+
 * [https://www.uv.mx/fei/](https://www.uv.mx/fei/)
 * [https://www.w3.org/WAI/](https://www.w3.org/WAI/)
-* [https://eminus.uv.mx/eminus4/](https://eminus.uv.mx/eminus4/)
+* [https://secihti.mx/](https://secihti.mx/)
+
+> **Importante**: Por ahora, **NO** seleccione la opción: `Incluir validación semántica con GPT-5`.
+
+![Nuevo experimento](docs/images/repetibilidad.png)
+
+Finalmente, presione el botón `Generar reporte`.
 
 **Variables analizadas:**
 
 1. Tiempo total de ejecución.
 2. Número total de violaciones detectadas por Axe-Core.
 3. Puntaje promedio de accesibilidad obtenido mediante Lighthouse.
+
+Los cantidades de cada métrica, pueden ser consultadas en el reporte generado en cada ejecucción.
+
+![alt text](docs/images/metricas.png)
 
 Para cada variable se calcularán:
 
@@ -64,14 +76,80 @@ Repitan el experimento **30 veces** utilizando las mismas tres URL y la misma co
 
 Se considerará que el experimento presenta una alta repetibilidad si las métricas obtenidas muestran un **coeficiente de variación bajo**, indicando una variabilidad mínima entre ejecuciones bajo las mismas condiciones experimentales.
 
+### Entorno de ejecución
+
+<small>
+
+| Característica | Valor |
+|----------------|-------|
+| Equipo | Apple MacBook Air M4 |
+| Arquitectura | ARM64 (Apple Silicon) |
+| Sistema operativo | macOS |
+| Versión del sistema operativo | 26.5.1 |
+| Memoria RAM | 16 GB |
+| CPU | Apple M4 |
+| GPU | GPU integrada Apple M4 |
+| Versión de Docker | 29.6.1 |
+| Versión de Docker Compose | 5.3.0 |
+
+</small>
+
 ### Resultados
 
+<small>
 
+| Iteración | Tiempo (s) | Violaciones Axe | Lighthouse | Observaciones |
+|-----------:|-----------:|----------------:|------------:|---------------|
+| 1  | 12.04 | 23 | 87.33 | - |
+| 2  | 12.16 | 23 | 87.33 | - |
+| 3  | 12.20 | 23 | 87.33 | - |
+| 4  | 11.99 | 23 | 87.33 | - |
+| 5  | 12.34 | 23 | 87.33 | - |
+| 6  | 12.31 | 23 | 87.33 | - |
+| 7  | 12.06 | 23 | 87.33 | - |
+| 8  | 12.05 | 23 | 87.33 | - |
+| 9  | 12.06 | 23 | 87.33 | - |
+| 10 | 12.08 | 23 | 87.33 | - |
+| 11 | 12.25 | 23 | 87.33 | - |
+| 12 | 12.28 | 23 | 87.33 | - |
+| 13 | 12.19 | 23 | 87.33 | - |
+| 14 | 11.87 | 23 | 87.33 | - |
+| 15 | 12.40 | 23 | 87.33 | - |
+| 16 | 11.95 | 23 | 87.33 | - |
+| 17 | 14.02 | 23 | 87.33 | - |
+| 18 | 12.16 | 23 | 87.33 | - |
+| 19 | 12.44 | 23 | 87.33 | - |
+| 20 | 11.97 | 23 | 87.33 | - |
+| 21 | 12.30 | 23 | 87.33 | - |
+| 22 | 12.21 | 23 | 87.33 | - |
+| 23 | 12.80 | 23 | 87.33 | - |
+| 24 | 12.29 | 23 | 87.33 | - |
+| 25 | 12.12 | 23 | 87.33 | - |
+| 26 | 12.06 | 23 | 87.33 | - |
+| 27 | 12.47 | 23 | 87.33 | - |
+| 28 | 12.66 | 23 | 87.33 | - |
+| 29 | 12.20 | 23 | 87.33 | - |
+| 30 | 12.31 | 23 | 87.33 | - |
+
+</small>
+
+<small>
+
+| Métrica                 |   Media   | Desviación estándar | Coeficiente de variación (CV) |
+| ----------------------- | --------: | ------------------: | ----------------------------: |
+| Tiempo de ejecución (s) | **12.27** |            **0.39** |                    **3.16 %** |
+| Violaciones Axe         | **23.00** |            **0.00** |                    **0.00 %** |
+| Lighthouse              | **87.33** |            **0.00** |                    **0.00 %** |
+
+</small>
 
 ### Conclusiones
 
-Si la hipótesis se cumple, los resultados mostrarán que la contenerización proporciona un entorno de ejecución estable y consistente, favoreciendo la repetibilidad de los experimentos. En caso de observar diferencias entre equipos, estas podrán atribuirse a factores como el hardware, la carga del sistema o las condiciones de red, los cuales serán discutidos durante la comparación de resultados entre participantes.
+La hipótesis **H1** fue aceptada.
 
+Durante las treinta ejecuciones no se presentaron fallos de conectividad, bloqueos por parte de los sitios web evaluados ni cambios en el contenido de las páginas, lo que permitió mantener constantes las condiciones del experimento. Asimismo, las métricas reportadas por Axe-Core y Lighthouse permanecieron invariables debido a que ambas herramientas implementan algoritmos determinísticos basados en reglas de evaluación y criterios definidos por los estándares WCAG. Bajo una misma versión del software, el mismo navegador y el mismo contenido HTML, es esperable que produzcan exactamente los mismos resultados.
+
+Sin embargo, este comportamiento podría ser diferente al incorporar un modelo de lenguaje como GPT-5 para realizar el análisis semántico. A diferencia de Axe-Core y Lighthouse, los modelos de lenguaje están basados en aprendizaje automático y procesos probabilísticos, por lo que sus respuestas pueden presentar cierta variabilidad entre ejecuciones, incluso cuando la entrada permanece sin cambios. En consecuencia, en la siguiente observación de replicabilidad, se debería analizar la estabilidad de los hallazgos generados por el LLM, permitiendo comparar el comportamiento de herramientas determinísticas frente a sistemas basados en inteligencia artificial generativa. De esta manera, sería posible caracterizar con mayor precisión el grado de repetibilidad alcanzable por cada tipo de tecnología dentro de una infraestructura experimental para la evaluación de accesibilidad web.
 
 ## 2. Requisitos
 
@@ -170,11 +248,10 @@ Durante la primera ejecución Docker descargará automáticamente las imágenes 
 
 ### Construcción desde el código fuente
 
-
 Si desea construir y levantar los contenedores desde el código fuente sin utilizar las imágenes de Docker Hub, utilice:
 
 ```bash
-docker compose up -f docker-compose-dev.yml --build
+docker compose -f docker-compose-dev.yml up --build
 ```
 
 ### Abrir la plataforma
@@ -190,8 +267,11 @@ http://localhost
 Si se requiere borrar todos los experimentos realizados, ejecute:
 
 ```bash
+# Para inicio usando imágenes
 docker compose down -v --remove-orphans
-docker compose up --build
+
+# Para construcción mediante código fuente
+docker compose -f docker-compose-dev.yml down -v --remove-orphans
 ```
 
 Este comando elimina los volúmenes, incluida la base de datos.
