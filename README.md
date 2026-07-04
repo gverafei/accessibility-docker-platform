@@ -38,7 +38,7 @@ Se ejecutará **30 veces** el mismo experimento utilizando la infraestructura Do
 
 **URLs evaluadas:**
 
-Coloque en el cuadro de texto las siguientes URLs como lo muestra la Figura.
+Colocar en el cuadro de texto las siguientes URLs como lo muestra la Figura.
 
 * [https://www.uv.mx/fei/](https://www.uv.mx/fei/)
 * [https://www.w3.org/WAI/](https://www.w3.org/WAI/)
@@ -48,7 +48,7 @@ Coloque en el cuadro de texto las siguientes URLs como lo muestra la Figura.
 
 ![Nuevo experimento](docs/images/repetibilidad.png)
 
-Finalmente, presione el botón `Generar reporte`.
+Finalmente, presionar el botón `Generar reporte`.
 
 **Variables analizadas:**
 
@@ -67,10 +67,6 @@ Para cada variable se calcularán:
 * Coeficiente de variación (CV).
 
 Además, se observarán las correlaciones generadas automáticamente por la plataforma entre las principales métricas del experimento.
-
-### Instrucciones para los demás evaluadores
-
-Repitan el experimento **30 veces** utilizando las mismas tres URL y la misma configuración de la plataforma. Calculen las tres métricas anteriores (media, desviación estándar y CV) y publiquen sus resultados en este mismo hilo, indicando también las correlaciones obtenidas y cualquier diferencia observada respecto a mis resultados.
 
 ### Criterio de evaluación
 
