@@ -195,10 +195,6 @@ Para cada categoría calcular:
 * Desviación estándar.
 * Coeficiente de variación (CV).
 
-### Instrucciones para los demás evaluadores
-
-Repitan el experimento utilizando las mismas tres URL y activando la opción **"Validar con GPT-5"**. Registren los hallazgos semánticos por categoría durante diez ejecuciones consecutivas y calculen la media, la desviación estándar y el coeficiente de variación para cada categoría. Finalmente, comparen sus resultados con los obtenidos en este hilo e indiquen si observaron categorías nuevas, diferencias en la frecuencia de los hallazgos o cambios relevantes en el comportamiento del modelo.
-
 ### Criterio de evaluación
 
 Se esperaría que las categorías principales reportadas por GPT-5 se mantengan relativamente estables entre ejecuciones, aunque podrían presentarse variaciones en el número de hallazgos o en la clasificación de algunos problemas debido al carácter probabilístico del modelo de lenguaje.
