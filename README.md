@@ -169,9 +169,9 @@ Todas las demás condiciones experimentales permanecen sin cambios.
 
 Ejecutar la plataforma solo de **5 a 10 veces** (debido a costos de API) utilizando las siguientes URL:
 
+* [https://www.uv.mx/fei/](https://www.uv.mx/fei/)
 * [https://www.w3.org/WAI/](https://www.w3.org/WAI/)
-* [https://www.uv.mx/](https://www.uv.mx/)
-* [https://www.un.org/](https://www.un.org/)
+* [https://secihti.mx/](https://secihti.mx/)
 
 En cada ejecución registrar los datos de la gráfica **"Hallazgos semánticos por categoría"** generada por GPT-5.
 
