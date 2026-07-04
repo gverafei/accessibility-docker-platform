@@ -173,6 +173,8 @@ Ejecutar la plataforma solo de **5 a 10 veces** (debido a costos de API) utiliza
 * [https://www.w3.org/WAI/](https://www.w3.org/WAI/)
 * [https://secihti.mx/](https://secihti.mx/)
 
+Si lo desea, podría cambiar estas URLs por otras de su interés que desee evaluar (mínimo 2 para calculo de correlación).
+
 En cada ejecución registrar los datos de la gráfica **"Hallazgos semánticos por categoría"** generada por GPT-5.
 
 ![alt text](docs/images/cat_semanticas.png)
