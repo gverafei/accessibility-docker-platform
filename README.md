@@ -52,7 +52,7 @@ Finalmente, presione el botón `Generar reporte`.
 
 **Variables analizadas:**
 
-1. Tiempo total de ejecución.
+1. Tiempo promedio de ejecución.
 2. Número total de violaciones detectadas por Axe-Core.
 3. Puntaje promedio de accesibilidad obtenido mediante Lighthouse.
 
