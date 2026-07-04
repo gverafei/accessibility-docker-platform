@@ -147,6 +147,8 @@ Se considerará que el experimento presenta una alta repetibilidad si las métri
 
 La hipótesis **H1** fue aceptada.
 
+Las treinta ejecuciones consecutivas produjeron resultados idénticos para las métricas de accesibilidad obtenidas mediante Axe-Core y Lighthouse, presentando un coeficiente de variación igual a cero. Esto indica que, bajo las mismas condiciones experimentales, ambas herramientas generan resultados completamente consistentes. En cuanto al tiempo de ejecución, se obtuvo un coeficiente de variación de 3.16 %, lo que representa una variabilidad baja y esperable en procesos que dependen del sistema operativo, la planificación del CPU y otros procesos concurrentes. En conjunto, estos resultados muestran que la infraestructura contenerizada permite realizar evaluaciones automáticas de accesibilidad web de manera repetible y estable.
+
 Durante las treinta ejecuciones no se presentaron fallos de conectividad, bloqueos por parte de los sitios web evaluados ni cambios en el contenido de las páginas, lo que permitió mantener constantes las condiciones del experimento. Asimismo, las métricas reportadas por Axe-Core y Lighthouse permanecieron invariables debido a que ambas herramientas implementan algoritmos determinísticos basados en reglas de evaluación y criterios definidos por los estándares WCAG. Bajo una misma versión del software, el mismo navegador y el mismo contenido HTML, es esperable que produzcan exactamente los mismos resultados.
 
 Sin embargo, este comportamiento podría ser diferente al incorporar un modelo de lenguaje como GPT-5 para realizar el análisis semántico. A diferencia de Axe-Core y Lighthouse, los modelos de lenguaje están basados en aprendizaje automático y procesos probabilísticos, por lo que sus respuestas pueden presentar cierta variabilidad entre ejecuciones, incluso cuando la entrada permanece sin cambios. En consecuencia, en la siguiente observación de replicabilidad, se debería analizar la estabilidad de los hallazgos generados por el LLM, permitiendo comparar el comportamiento de herramientas determinísticas frente a sistemas basados en inteligencia artificial generativa. De esta manera, sería posible caracterizar con mayor precisión el grado de repetibilidad alcanzable por cada tipo de tecnología dentro de una infraestructura experimental para la evaluación de accesibilidad web.
@@ -240,6 +242,8 @@ Se esperaría que las categorías principales reportadas por GPT-5 se mantengan 
 ### Conclusiones
 
 La hipótesis **H2** fue **aceptada**.
+
+En las diez ejecuciones consecutivas, GPT-5 mantuvo un comportamiento consistente al identificar las principales categorías de problemas de accesibilidad. Sin embargo, el número de hallazgos reportados dentro de cada categoría presentó una variabilidad mayor que la observada previamente con Axe-Core y Lighthouse. El total de hallazgos mostró un coeficiente de variación de 16.11 %, mientras que las categorías individuales alcanzaron valores entre 41 % y 82 %, evidenciando que el modelo mantiene una tendencia general estable, aunque modifica la distribución específica de los hallazgos entre ejecuciones.
 
 Los resultados obtenidos reflejan una diferencia fundamental entre las herramientas determinísticas y los modelos de lenguaje. Axe-Core y Lighthouse implementan algoritmos basados en reglas definidas por los estándares WCAG; por ello, cuando se ejecutan sobre el mismo contenido y bajo las mismas condiciones, producen resultados idénticos entre ejecuciones.
 
